@@ -37,10 +37,14 @@ class GoogleController extends Controller
                 'firstName' => $googleUser->name,
                 'lastName'  => $googleUser->name,
                 'email'     => $googleUser->email,
-                'client_id' => $googleUser->id,
+                'clientId' => $googleUser->id,
                 'password'  => bcrypt('google_login_' . uniqid())
             ]);
         }
+        session([
+            'clientID' => $user->clientId,
+            'clientFirstName' => $user->firstName,
+            ]); 
 
         Auth::guard('client')->login($user);
 

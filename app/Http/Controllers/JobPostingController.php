@@ -36,7 +36,7 @@ class JobPostingController extends Controller
 
         // Create the job post
         $job = JobPost::create([
-            'client_id' => session('clientID'), // make sure this session exists
+            'client_id' => session('clientID'),
             'title' => $request->title,
             'description' => $request->description,
             'category_id' => $request->category,
