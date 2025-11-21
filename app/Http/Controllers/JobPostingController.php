@@ -19,9 +19,6 @@ class JobPostingController extends Controller
         return view('client.Jobpost', compact('categories', 'skills'));
     }
 
-    /**
-     * Save the job post (all data in one go)
-     */
     public function saveJob(Request $request)
     {
         $request->validate([
@@ -55,5 +52,11 @@ class JobPostingController extends Controller
         }
 
         return redirect('/dashboard')->with('success', 'Job Posted Successfully!');
+    }
+
+    public function index()
+    {
+        $jobs = JobPost::orderBy('created_at', 'desc')->get();
+        return view('client.Jobpost', compact('jobs'));
     }
 }

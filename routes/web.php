@@ -7,6 +7,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AddGigController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\ClientJobController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -129,3 +131,9 @@ Route::get('/auth/google/client/callback', [GoogleController::class, 'handleGoog
 // Freelancer Google Login
 Route::get('/auth/google/freelancer', [GoogleController::class, 'redirectFreelancer']);
 Route::get('/auth/google/freelancer/callback', [GoogleController::class, 'handleGoogleFreelancer']);
+
+
+//Job Details
+Route::get('/dashboard', [ClientJobController::class, 'index'])->name('client.jobboard');
+Route::get('/client/job/{id}', [ClientJobController::class, 'showdetails'])->name('client.job.show');
+

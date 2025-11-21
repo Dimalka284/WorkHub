@@ -13,10 +13,15 @@ class ClientController extends Controller
         $request->validate([
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email|unique:clients,email',
             'password' => 'required|min:6',
             'industry' => 'nullable|exists:industries,industryId',
         ]);
+
+        $existing = Client::where('email', $request->email)->first();
+
+        if ($existing) {
+            return back()->with('error', 'This email is already registered.');
+        }
 
         Client::create([
             'firstName' => $request->firstname,
@@ -27,7 +32,7 @@ class ClientController extends Controller
             'industryId' => $request->industry,
         ]);
 
-        return redirect('/post');
+        return redirect('/dashboard');
     }
 
 

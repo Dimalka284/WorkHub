@@ -8,8 +8,36 @@
     Post a Job
 </button></a>
 </div>
-<div class="container px-4 py-8 mx-auto">
+<div class="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">
+    @foreach($jobs as $job)
+    <div class="relative flex flex-col p-6 transition-shadow duration-300 bg-white border border-gray-200 shadow-md rounded-2xl hover:shadow-xl">
+        <div class="absolute flex space-x-2 top-4 right-4">
+            <span class="px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">New</span>
+        </div>
+        <h2 class="mb-2 text-xl font-bold text-gray-900">{{ $job->title }}</h2>
+        <div class="flex flex-wrap items-center mb-4 text-sm text-gray-500">
+            <span class="mr-2">{{ $job->paymenttype }}</span>
+            <span class="mr-2">•</span>
+            <span>Posted {{ $job->created_at->diffForHumans() }}</span>
+        </div>
+        <div class="flex flex-wrap gap-2 mb-4">
+            @foreach($job->skills as $skill)
+                <span class="px-3 py-2 text-lg font-medium text-white bg-indigo-500 rounded-full">
+                    {{ $skill->name }}
+                </span>
+            @endforeach
+        </div>
+        <p class="mb-6 text-gray-700">{{ Str::limit($job->description, 120) }}</p>
+        <a href="{{ route('client.job.show', $job->jobPostId) }}">
+        <button class="self-start px-6 py-2 text-white transition-colors duration-200 bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            See more
+        </button></a>
+    </div>
+    @endforeach
+</div>
 
+
+<div class="container px-4 py-8 mx-auto">
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">Industries in High Demand for Expert Consultations</h2>
     </div>

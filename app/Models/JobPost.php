@@ -33,5 +33,16 @@ class JobPost extends Model
             'skill_id'
         );
     }
+    
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'categoryId');
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id', 'clientId'); 
+    }
+
 }
 

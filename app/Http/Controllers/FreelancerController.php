@@ -12,9 +12,14 @@ class FreelancerController extends Controller
         $request->validate([
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email|unique:freelancer,email',
             'password' => 'required|min:6',
         ]);
+
+        $existing = Freelancer::where('email', $request->email)->first();
+
+        if ($existing) {
+            return back()->with('error', 'This email is already registered.');
+        }
 
         Freelancer::create([
             'firstName' => $request->firstname,
@@ -24,7 +29,7 @@ class FreelancerController extends Controller
             'bio' => $request->bio,
         ]);
 
-        return back()->with('message', 'Registered Successfully');
+        return redirect('/fdashboard');
     }
 
 }
