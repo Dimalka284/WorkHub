@@ -8,6 +8,8 @@ use App\Http\Controllers\JobPostingController;
 use App\Http\Controllers\AddGigController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ClientJobController;
+use App\Http\Controllers\ClientProfileController;
+use App\Http\Controllers\FreelancerProfileController;
 
 
 /*
@@ -137,3 +139,22 @@ Route::get('/auth/google/freelancer/callback', [GoogleController::class, 'handle
 Route::get('/dashboard', [ClientJobController::class, 'index'])->name('client.jobboard');
 Route::get('/client/job/{id}', [ClientJobController::class, 'showdetails'])->name('client.job.show');
 
+Route::delete('/client/job/{id}', [JobPostingController::class, 'delete'])
+        ->name('client.job.delete');
+
+Route::get('/client/job/{id}/edit', [JobPostingController::class, 'edit'])
+    ->name('client.job.edit')
+    ->middleware('clientAuth');
+
+Route::put('/client/job/{id}', [JobPostingController::class, 'update'])
+    ->name('client.job.update')
+    ->middleware('clientAuth');
+
+//Update Profile
+// CLIENT
+Route::get('/client/profile', [ClientProfileController::class, 'edit'])->name('client.profile');
+Route::post('/client/profile', [ClientProfileController::class, 'update'])->name('client.profile.update');
+
+// FREELANCER
+Route::get('/freelancer/profile', [FreelancerProfileController::class, 'edit'])->name('freelancer.profile');
+Route::post('/freelancer/profile', [FreelancerProfileController::class, 'update'])->name('freelancer.profile.update');

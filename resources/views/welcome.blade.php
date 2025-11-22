@@ -140,9 +140,27 @@
             </svg>
             <h3 class="text-lg font-medium text-gray-800">Engineering & Architecture</h3>
         </div>
-
-    </div>
+    </div> 
 </div>
+
+<div class="flex flex-col items-center justify-center w-full py-12 mt-10 shadow-inner bg-gradient-to-r from-blue-50 to-green-50 rounded-3xl">
+
+    <img 
+        src="{{ asset('images/logo.png') }}" 
+        alt="WorkHub Logo" 
+        class="w-40 h-auto transition-transform duration-300 drop-shadow-lg hover:scale-105"
+    >
+
+    <h2 class="mt-4 text-2xl font-bold text-gray-800">
+        WorkHub
+    </h2>
+
+    <p class="max-w-md mt-2 text-center text-gray-600">
+        Your trusted platform connecting skilled freelancers with clients worldwide.
+    </p>
+
+</div>
+
 
 <script>
     const findBtn = document.getElementById('findTalentBtn');

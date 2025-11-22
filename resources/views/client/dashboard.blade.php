@@ -2,6 +2,12 @@
 
 @section('title','dashboard')
 @section('content')
+@if(session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+@endif
+
 <div class="flex justify-end">  
     <a href="/post"><button 
     class="px-6 py-2 text-lg font-semibold text-white transition duration-150 ease-in-out bg-blue-600 shadow-md rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 active:bg-blue-800">

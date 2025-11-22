@@ -40,6 +40,7 @@ class JobPostingController extends Controller
             'project_length' => $request->scope,
             'budget' => $request->budget,
             'payment_preference' => $request->paymenttype,
+            'deadline' => $request->deadline,
         ]);
 
         // Attach selected skills
@@ -59,4 +60,52 @@ class JobPostingController extends Controller
         $jobs = JobPost::orderBy('created_at', 'desc')->get();
         return view('client.Jobpost', compact('jobs'));
     }
+
+    public function delete($id)
+    {
+        $job = JobPost::findOrFail($id);
+        if ($job->client_id != session('clientID')) {
+            abort(403, 'Unauthorized Action.');
+        }
+        $job->delete();
+        return redirect('/dashboard')->with('success', 'Job deleted successfully.');
+    }
+
+    public function edit($id)
+    {
+        $job = JobPost::findOrFail($id);
+
+            if ($job->client_id != session('clientID')) {
+                abort(403, 'Unauthorized action.');
+            }
+
+            // Load categories and skills for dropdowns
+            $categories = Category::all();
+            $skills = Skill::all();
+
+            return view('client.editJob', compact('job', 'categories', 'skills'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $job = JobPost::findOrFail($id);
+
+        if ($job->client_id != session('clientID')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $job->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'category_id' => $request->category,
+            'budget' => $request->budget,
+        ]);
+
+        // Update skills
+        $job->skills()->sync($request->skills);
+
+        return redirect('/dashboard')->with('success', 'Job updated successfully!');
+    }
+
+
 }

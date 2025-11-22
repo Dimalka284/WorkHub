@@ -156,6 +156,10 @@
                         <option>Milestone payments (e.g., 25% at design, 75% at delivery)</option>
                     </select>
                 </div>
+                <label class="block mb-3">
+                    <span class="font-semibold">Deadline</span>
+                    <input type="date" name="deadline" class="w-full mt-1 border-gray-300 rounded-md" required>
+                </label>
 
                 <hr>
 

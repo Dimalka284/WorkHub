@@ -63,7 +63,7 @@ class LoginController extends Controller
 
          // Clear all session data
         Session::flush();
-        return redirect()->route('login');
+        return redirect('/');
     }
 }
 

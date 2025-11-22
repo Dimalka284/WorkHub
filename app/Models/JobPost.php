@@ -13,6 +13,7 @@ class JobPost extends Model
     protected $primaryKey = 'jobPostId';
     public $incrementing = true;
     protected $keyType = 'int';
+    protected $dates = ['deadline'];
 
     protected $fillable = [
         'client_id',
@@ -21,7 +22,8 @@ class JobPost extends Model
         'category_id',
         'project_length',
         'budget',
-        'payment_preference'
+        'payment_preference',
+        'deadline'
     ];
 
     public function skills()

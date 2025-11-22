@@ -3,7 +3,6 @@
 @section('title', $job->title)
 
 @section('content')
-
 <div class="p-4 mx-auto max-w-7xl sm:p-6 lg:p-8">
 <div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
     <div class="space-y-6">
@@ -48,7 +47,7 @@
         </div>
     </div>
     <div class="space-y-6">
-        <div class="sticky p-6 bg-white border border-gray-200 shadow-md rounded-xl top-8">
+        <div class="p-6 bg-white border border-gray-200 shadow-md  rounded-xl top-8">
             <h3 class="mb-4 text-xl font-semibold text-gray-800">Job Action</h3>
             
             <a href="#" class="block w-full px-6 py-3 mb-3 text-lg font-bold text-center text-white transition duration-150 bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50">
@@ -78,6 +77,37 @@
         </div>
     </div>
 </div>
+
+{{-- edit and delete --}}
+
+@if(session('clientID') == $job->client_id)
+<div class="flex mt-6 space-x-4">
+    <!-- Edit Button -->
+    <a href="{{ route('client.job.edit', $job->jobPostId) }}"
+       class="flex-1 px-5 py-3 font-semibold text-center text-white transition duration-200 bg-blue-600 shadow-md rounded-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <svg class="inline w-5 h-5 mr-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Edit
+    </a>
+
+    <!-- Delete Button -->
+    <form action="{{ route('client.job.delete', $job->jobPostId) }}" method="POST" class="flex-1">
+        @csrf
+        @method('DELETE')
+        <button type="submit"
+                class="flex w-full px-5 py-3 font-semibold text-white transition duration-200 bg-red-600 shadow-md rounded-2xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                onclick="return confirm('Are you sure you want to delete this job post?')">
+            <svg class="inline w-5 h-5 mr-2 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a2 2 0 012 2v2H8V5a2 2 0 012-2z"/>
+            </svg>
+            Delete
+        </button>
+    </form>
+</div>
+@endif
 
 
 </div>
