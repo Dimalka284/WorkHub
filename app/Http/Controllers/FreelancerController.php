@@ -31,5 +31,5 @@ class FreelancerController extends Controller
 
         return redirect('/fdashboard');
     }
-
+    
 }

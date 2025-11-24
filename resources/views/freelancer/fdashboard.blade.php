@@ -6,7 +6,7 @@
     
     <div class="flex flex-col items-start justify-between pb-4 mb-10 border-b sm:flex-row sm:items-center">
         <h1 class="mb-4 text-3xl font-extrabold tracking-tight text-gray-800 sm:text-4xl sm:mb-0">
-            Welcome Back, <span class="text-indigo-600">{{ session('freelancerFirstName') }}</span>!
+            Welcome Back, <span class="text-indigo-600">{{ session('freelancerFirstName') }}</span>
         </h1>
         
         <a href="/gig">

@@ -107,7 +107,7 @@
 
                 <!-- Action Button -->
                 <button type="submit"
-                    class="w-full px-4 py-3 mt-4 text-base font-semibold text-white transition duration-150 ease-in-out bg-teal-600 rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                    class="w-full px-4 py-3 mt-4 text-base font-semibold text-white transition duration-150 ease-in-out bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                     Save Changes
                 </button>
             </form>
