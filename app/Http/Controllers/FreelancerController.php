@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Freelancer;
 
 class FreelancerController extends Controller
@@ -21,12 +22,21 @@ class FreelancerController extends Controller
             return back()->with('error', 'This email is already registered.');
         }
 
-        Freelancer::create([
+        $freelancer = Freelancer::create([
             'firstName' => $request->firstname,
             'lastName' => $request->lastname,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'bio' => $request->bio,
+        ]);
+
+        // Auto-login
+        Auth::guard('freelancer')->login($freelancer);
+
+        // Set session
+        session([
+            'freelancerID' => $freelancer->freelancerId,
+            'freelancerFirstName' => $freelancer->firstName
         ]);
 
         return redirect('/fdashboard');

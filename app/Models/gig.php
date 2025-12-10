@@ -21,4 +21,8 @@ class gig extends Model
                     ->withPivot('experienceLevel')
                     ->withTimestamps();
     }
+
+    public function orders() {
+        return $this->hasMany(Order::class, 'gig_id', 'id');
+    }
 }

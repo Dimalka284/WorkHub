@@ -10,6 +10,8 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ClientJobController;
 use App\Http\Controllers\ClientProfileController;
 use App\Http\Controllers\FreelancerProfileController;
+use App\Http\Controllers\GigBrowseController;
+use App\Http\Controllers\OrderController;
 
 
 /*
@@ -116,6 +118,15 @@ Route::get('/fdashboard', [AddGigController::class, 'index'])->name('gigs.index'
 Route::middleware(['freelancerAuth'])->group(function () {
     Route::get('/gig', [AddGigController::class, 'getallskills']);
     Route::post('/gig', [AddGigController::class,'store'])->name('gig.store');
+    Route::get('/gig/{id}/edit', [AddGigController::class, 'edit'])->name('gig.edit');
+    Route::put('/gig/{id}', [AddGigController::class, 'update'])->name('gig.update');
+    Route::delete('/gig/{id}', [AddGigController::class, 'destroy'])->name('gig.destroy');
+    
+    // Job Application Routes for Freelancers
+    Route::get('/jobs/browse', [App\Http\Controllers\JobApplicationController::class, 'browse'])->name('jobs.browse');
+    Route::post('/jobs/{id}/apply', [App\Http\Controllers\JobApplicationController::class, 'apply'])->name('jobs.apply');
+    Route::get('/my-applications', [App\Http\Controllers\JobApplicationController::class, 'myApplications'])->name('applications.my');
+    Route::delete('/applications/{id}/withdraw', [App\Http\Controllers\JobApplicationController::class, 'withdraw'])->name('applications.withdraw');
 });
 
 Route::get('/gig/{id}', [AddGigController::class, 'details'])->name('gig.details');
@@ -158,3 +169,38 @@ Route::post('/client/profile', [ClientProfileController::class, 'update'])->name
 // FREELANCER
 Route::get('/freelancer/profile', [FreelancerProfileController::class, 'edit'])->name('freelancer.profile');
 Route::post('/freelancer/profile', [FreelancerProfileController::class, 'update'])->name('freelancer.profile.update');
+
+// Job Application Routes for Clients
+Route::middleware(['clientAuth'])->group(function () {
+    Route::get('/jobs/{id}/applications', [App\Http\Controllers\JobApplicationController::class, 'viewApplications'])->name('job.applications');
+    Route::post('/applications/{id}/accept', [App\Http\Controllers\JobApplicationController::class, 'accept'])->name('application.accept');
+    Route::post('/applications/{id}/reject', [App\Http\Controllers\JobApplicationController::class, 'reject'])->name('application.reject');
+    
+    // Gig Browsing and Ordering Routes for Clients
+    Route::get('/gigs/browse', [GigBrowseController::class, 'index'])->name('gigs.browse');
+    Route::get('/gigs/{id}', [GigBrowseController::class, 'show'])->name('gigs.show');
+    Route::post('/gigs/{id}/order', [OrderController::class, 'store'])->name('order.place');
+    Route::get('/my-orders', [OrderController::class, 'clientOrders'])->name('client.orders');
+    Route::post('/orders/{id}/accept-delivery', [OrderController::class, 'acceptDelivery'])->name('order.accept.delivery');
+    Route::post('/orders/{id}/request-revision', [OrderController::class, 'requestRevision'])->name('order.request.revision');
+    
+    // Job Application Work Review
+    Route::post('/job-applications/{id}/accept-delivery', [App\Http\Controllers\JobApplicationController::class, 'acceptDelivery'])->name('job.accept.delivery');
+    Route::post('/job-applications/{id}/request-revision', [App\Http\Controllers\JobApplicationController::class, 'requestRevision'])->name('job.request.revision');
+});
+
+// Order Management Routes for Freelancers
+Route::middleware(['freelancerAuth'])->group(function () {
+    Route::get('/my-gig-orders', [OrderController::class, 'freelancerOrders'])->name('freelancer.orders');
+    Route::post('/orders/{id}/accept', [OrderController::class, 'accept'])->name('order.accept');
+    Route::post('/orders/{id}/reject', [OrderController::class, 'reject'])->name('order.reject');
+    Route::post('/orders/{id}/deliver', [OrderController::class, 'submitDelivery'])->name('order.deliver');
+    
+    // Job Application Work Submission
+    Route::post('/job-applications/{id}/submit-work', [App\Http\Controllers\JobApplicationController::class, 'submitWork'])->name('job.submit.work');
+});
+
+// Notification Routes (for both clients and freelancers)
+Route::post('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+Route::post('/notifications/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');

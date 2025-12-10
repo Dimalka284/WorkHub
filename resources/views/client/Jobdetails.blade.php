@@ -50,9 +50,49 @@
         <div class="p-6 bg-white border border-gray-200 shadow-md  rounded-xl top-8">
             <h3 class="mb-4 text-xl font-semibold text-gray-800">Job Action</h3>
             
-            <a href="#" class="block w-full px-6 py-3 mb-3 text-lg font-bold text-center text-white transition duration-150 bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50">
-                Apply Now
-            </a>
+            @if(session('freelancerID'))
+                @php
+                    $hasApplied = $job->applications()->where('freelancer_id', session('freelancerID'))->first();
+                    $isAccepted = $job->acceptedApplication != null;
+                @endphp
+                
+                @if($isAccepted)
+                    <div class="p-4 mb-3 border border-yellow-200 bg-yellow-50 rounded-lg">
+                        <p class="text-sm font-semibold text-yellow-800">This job has been filled</p>
+                    </div>
+                @elseif($hasApplied)
+                    @if($hasApplied->status === 'accepted')
+                        <div class="p-4 mb-3 border border-green-200 bg-green-50 rounded-lg">
+                            <p class="text-sm font-semibold text-green-800">✓ Your application was accepted!</p>
+                        </div>
+                    @elseif($hasApplied->status === 'rejected')
+                        <div class="p-4 mb-3 border border-red-200 bg-red-50 rounded-lg">
+                            <p class="text-sm font-semibold text-red-800">Your application was not selected</p>
+                        </div>
+                    @else
+                        <div class="p-4 mb-3 border border-blue-200 bg-blue-50 rounded-lg">
+                            <p class="text-sm font-semibold text-blue-800">Application pending review</p>
+                        </div>
+                    @endif
+                    <a href="{{ route('applications.my') }}" class="block w-full px-6 py-3 text-sm font-semibold text-center text-blue-600 transition duration-150 border border-blue-600 rounded-lg hover:bg-blue-50">
+                        View My Applications
+                    </a>
+                @else
+                    <button onclick="document.getElementById('applyModal').classList.remove('hidden')" 
+                            class="block w-full px-6 py-3 mb-3 text-lg font-bold text-center text-white transition duration-150 bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-500 focus:ring-opacity-50">
+                        Apply Now
+                    </button>
+                @endif
+            @elseif(session('clientID') == $job->client_id)
+                <a href="{{ route('job.applications', $job->jobPostId) }}" 
+                   class="block w-full px-6 py-3 mb-3 text-lg font-bold text-center text-white transition duration-150 bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
+                    View Applications ({{ $job->applications()->count() }})
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="block w-full px-6 py-3 mb-3 text-lg font-bold text-center text-white transition duration-150 bg-green-600 rounded-lg hover:bg-green-700">
+                    Login to Apply
+                </a>
+            @endif
             
             <a href="{{ route('client.jobboard') }}" class="block w-full px-6 py-3 text-sm font-semibold text-center text-blue-600 transition duration-150 border border-blue-600 rounded-lg hover:bg-blue-50">
                 Back to Job Board
@@ -111,4 +151,58 @@
 
 
 </div>
+
+<!-- Application Modal -->
+@if(session('freelancerID'))
+<div id="applyModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50 backdrop-blur-sm">
+    <div class="w-full max-w-2xl p-8 mx-4 bg-white shadow-2xl rounded-2xl">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Apply for Job</h2>
+            <button onclick="document.getElementById('applyModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <p class="mb-6 text-lg text-gray-600">Applying for: {{ $job->title }}</p>
+        
+        <form method="POST" action="{{ route('jobs.apply', $job->jobPostId) }}">
+            @csrf
+            <div class="mb-6">
+                <label for="cover_letter" class="block mb-2 text-sm font-semibold text-gray-700">
+                    Cover Letter <span class="text-red-500">*</span>
+                </label>
+                <textarea name="cover_letter" id="cover_letter" rows="6" required minlength="50"
+                    placeholder="Explain why you're the perfect fit for this job..."
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"></textarea>
+                <div class="mt-2 text-xs text-gray-500">Minimum 50 characters</div>
+            </div>
+            
+            <div class="mb-6">
+                <label for="proposed_rate" class="block mb-2 text-sm font-semibold text-gray-700">
+                    Proposed Rate (Optional)
+                </label>
+                <div class="relative">
+                    <span class="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2">Rs.</span>
+                    <input type="number" name="proposed_rate" id="proposed_rate" step="0.01" min="0" placeholder="0.00"
+                        class="w-full p-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('applyModal').classList.add('hidden')"
+                    class="px-6 py-3 font-semibold text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="px-6 py-3 font-semibold text-white transition-colors bg-green-600 rounded-lg shadow-md hover:bg-green-700">
+                    Submit Application
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
 @endsection

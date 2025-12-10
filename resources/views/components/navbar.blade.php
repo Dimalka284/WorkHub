@@ -15,6 +15,16 @@
                 <div class="hidden sm:ml-6 sm:flex sm:space-x-8 lg:space-x-10">
                     <a href="/fdashboard" class="flex items-center px-1 pt-1 text-base font-medium text-gray-700 transition duration-150 ease-in-out border-b-2 border-transparent hover:border-teal-500 hover:text-teal-600">Hire Talent</a>
                     <a href="/dashboard" class="flex items-center px-1 pt-1 text-base font-medium text-gray-700 transition duration-150 ease-in-out border-b-2 border-transparent hover:border-teal-500 hover:text-teal-600">Manage Work</a>
+                    
+                    @if(session('clientID'))
+                        <a href="{{ route('client.orders') }}" class="flex items-center px-1 pt-1 text-base font-medium text-gray-700 transition duration-150 ease-in-out border-b-2 border-transparent hover:border-teal-500 hover:text-teal-600">My Orders</a>
+                    @endif
+
+                    @if(session('freelancerID'))
+                        <a href="{{ route('freelancer.orders') }}" class="flex items-center px-1 pt-1 text-base font-medium text-gray-700 transition duration-150 ease-in-out border-b-2 border-transparent hover:border-teal-500 hover:text-teal-600">My Gig Orders</a>
+                        <a href="{{ route('applications.my') }}" class="flex items-center px-1 pt-1 text-base font-medium text-gray-700 transition duration-150 ease-in-out border-b-2 border-transparent hover:border-teal-500 hover:text-teal-600">My Applications</a>
+                    @endif
+
                     <a href="#" class="flex items-center px-1 pt-1 text-base font-medium text-gray-700 transition duration-150 ease-in-out border-b-2 border-transparent hover:border-teal-500 hover:text-teal-600">Reports</a>
                 </div>
             </div>
@@ -31,8 +41,71 @@
                     </button>
                 </div>
 
+
                
                 @if(session('clientID') || session('freelancerID'))
+                    {{-- Notification Bell --}}
+                    <div class="relative" id="notificationMenu">
+                        <button id="notificationBtn" class="relative p-2 text-gray-700 transition duration-150 ease-in-out rounded-full hover:bg-gray-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            @php
+                                $user = session('clientID') ? \App\Models\Client::find(session('clientID')) : \App\Models\Freelancer::find(session('freelancerID'));
+                                $unreadCount = $user ? $user->unreadNotifications->count() : 0;
+                            @endphp
+                            @if($unreadCount > 0)
+                                <span class="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">{{ $unreadCount }}</span>
+                            @endif
+                        </button>
+
+                        {{-- Notification Dropdown --}}
+                        <div id="notificationDropdown" class="absolute right-0 z-50 hidden w-80 mt-3 origin-top-right bg-white shadow-2xl rounded-xl ring-1 ring-black ring-opacity-5 max-h-96 overflow-hidden">
+                            <div class="p-4 border-b border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900">Notifications</h3>
+                                    @if($unreadCount > 0)
+                                        <form action="{{ route('notifications.mark-all-read') }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-xs text-teal-600 hover:text-teal-700">Mark all read</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-y-auto max-h-80">
+                                @if($user && $user->notifications->count() > 0)
+                                    @foreach($user->notifications->take(5) as $notification)
+                                        <a href="{{ $notification->data['action_url'] ?? '#' }}" 
+                                           onclick="event.preventDefault(); markAsRead('{{ $notification->id }}', '{{ $notification->data['action_url'] ?? '#' }}');"
+                                           class="block px-4 py-3 transition duration-150 ease-in-out hover:bg-gray-50 {{ $notification->read_at ? 'bg-white' : 'bg-teal-50' }}">
+                                            <div class="flex items-start">
+                                                <div class="flex-1">
+                                                    <p class="text-sm font-medium text-gray-900">{{ $notification->data['title'] ?? 'Notification' }}</p>
+                                                    <p class="text-xs text-gray-600 mt-1">{{ $notification->data['message'] ?? '' }}</p>
+                                                    <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                                                </div>
+                                                @if(!$notification->read_at)
+                                                    <div class="w-2 h-2 mt-2 ml-2 bg-teal-500 rounded-full"></div>
+                                                @endif
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                    <a href="{{ route('notifications.index') }}" class="block px-4 py-3 text-sm font-medium text-center text-teal-600 border-t border-gray-100 hover:bg-gray-50">
+                                        View all notifications
+                                    </a>
+                                @else
+                                    <div class="px-4 py-8 text-center text-gray-500">
+                                        <svg class="w-12 h-12 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                        </svg>
+                                        <p class="mt-2 text-sm">No notifications yet</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="relative" id="profileMenu">
                         <img src="{{ asset('images/profile.png') }}" 
                             alt="User Profile"
@@ -103,6 +176,16 @@
             
             <a href="/fdashboard" class="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-teal-50 hover:text-teal-600">Hire Talent</a>
             <a href="/dashboard" class="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-teal-50 hover:text-teal-600">Manage Work</a>
+            
+            @if(session('clientID'))
+                <a href="{{ route('client.orders') }}" class="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-teal-50 hover:text-teal-600">My Orders</a>
+            @endif
+
+            @if(session('freelancerID'))
+                <a href="{{ route('freelancer.orders') }}" class="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-teal-50 hover:text-teal-600">My Gig Orders</a>
+                <a href="{{ route('applications.my') }}" class="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-teal-50 hover:text-teal-600">My Applications</a>
+            @endif
+
             <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 rounded-md hover:bg-teal-50 hover:text-teal-600">Reports</a>
         </div>
         
@@ -127,19 +210,37 @@ document.addEventListener("DOMContentLoaded", function () {
     const mobileMenuBtn = document.getElementById("mobileMenuBtn");
     const mobileMenu = document.getElementById("mobileMenu");
     const menuIcon = document.getElementById("menuIcon");
+    const notificationBtn = document.getElementById("notificationBtn");
+    const notificationDropdown = document.getElementById("notificationDropdown");
 
     
     if (profileBtn) {
         profileBtn.addEventListener("click", function (e) {
             e.stopPropagation();
             dropdown.classList.toggle("hidden");
+            if (notificationDropdown) notificationDropdown.classList.add("hidden");
+        });
+    }
+
+    // Notification dropdown toggle
+    if (notificationBtn) {
+        notificationBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle("hidden");
+            if (dropdown) dropdown.classList.add("hidden");
         });
     }
 
     document.addEventListener("click", function (event) {
-        const menu = document.getElementById("profileMenu");
-        if (menu && !menu.contains(event.target)) {
+        const profileMenu = document.getElementById("profileMenu");
+        const notificationMenu = document.getElementById("notificationMenu");
+        
+        if (profileMenu && !profileMenu.contains(event.target)) {
             dropdown.classList.add("hidden");
+        }
+        
+        if (notificationMenu && !notificationMenu.contains(event.target)) {
+            notificationDropdown.classList.add("hidden");
         }
     });
 
@@ -158,4 +259,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+// Mark notification as read
+function markAsRead(notificationId, actionUrl) {
+    fetch(`/notifications/${notificationId}/read`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            'Content-Type': 'application/json'
+        }
+    }).then(() => {
+        window.location.href = actionUrl;
+    });
+}
 </script>

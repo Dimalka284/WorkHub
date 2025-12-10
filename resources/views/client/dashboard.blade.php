@@ -19,6 +19,11 @@
     <div class="relative flex flex-col p-6 transition-shadow duration-300 bg-white border border-gray-200 shadow-md rounded-2xl hover:shadow-xl">
         <div class="absolute flex space-x-2 top-4 right-4">
             <span class="px-3 py-1 text-xs font-semibold text-white bg-blue-500 rounded-full">New</span>
+            @if($job->applications()->count() > 0)
+                <span class="px-3 py-1 text-xs font-semibold text-white bg-green-500 rounded-full">
+                    {{ $job->applications()->count() }} {{ Str::plural('Applicant', $job->applications()->count()) }}
+                </span>
+            @endif
         </div>
         <h2 class="mb-2 text-xl font-bold text-gray-900">{{ $job->title }}</h2>
         <div class="flex flex-wrap items-center mb-4 text-sm text-gray-500">

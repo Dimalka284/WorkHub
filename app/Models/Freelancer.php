@@ -28,4 +28,12 @@ class Freelancer extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    /**
+     * Get all job applications submitted by this freelancer
+     */
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class, 'freelancer_id', 'freelancerId');
+    }
 }

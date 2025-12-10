@@ -46,5 +46,22 @@ class JobPost extends Model
         return $this->belongsTo(Client::class, 'client_id', 'clientId'); 
     }
 
+    /**
+     * Get all applications for this job post
+     */
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class, 'job_post_id', 'jobPostId');
+    }
+
+    /**
+     * Get the accepted application for this job post
+     */
+    public function acceptedApplication()
+    {
+        return $this->hasOne(JobApplication::class, 'job_post_id', 'jobPostId')
+                    ->where('status', 'accepted');
+    }
+
 }
 
